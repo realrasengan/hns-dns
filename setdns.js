@@ -5,8 +5,8 @@ const os = require('os');
 let argv=process.argv;
 let argc=process.argv.length;
 
-if(os.platform()!="darwin") {
-  console.log("Sorry, only available for Mac OS X at the moment.");
+if(os.platform()!="darwin" && os.platform() !="linux") {
+  console.log("Sorry, only available for Mac OS X and Linux at the moment.");
 }
 else if(argc!=3) {
   console.log("Syntax: node setdns.js on|off");
@@ -20,24 +20,39 @@ else {
       }
       else {
         if (addresses[0]=="45.33.66.56") {
-          exec(`route get handshake.org | grep interface`, function(err,stdout,stderr) {
-            result = stdout.split(':')[1].trim();
-            exec(`networksetup -listnetworkserviceorder |grep `+result, function(err,stdout,stderr) {
-              result = stdout.split(',')[0].split(':')[1].trim();
-              exec(`osascript -e 'do shell script "./dnson.sh `+result+`" with administrator privileges'`);
-            });
-          });
+          switch(os.platform()) {
+            case "darwin":
+              exec(`route get handshake.org | grep interface`, function(err,stdout,stderr) {
+                result = stdout.split(':')[1].trim();
+                exec(`networksetup -listnetworkserviceorder |grep `+result, function(err,stdout,stderr) {
+                  result = stdout.split(',')[0].split(':')[1].trim();
+                  exec(`osascript -e 'do shell script "./dnson.sh `+result+`" with administrator privileges'`);
+                });
+              });
+              break;
+            case "linux":
+              exec(`sudo ./dnson-linux.sh`);
+              break;
+          }
         }
       }
     });
   }
   else {
-    exec(`route get handshake.org | grep interface`, function(err,stdout,stderr) {
-      result = stdout.split(':')[1].trim();
-      exec(`networksetup -listnetworkserviceorder |grep `+result, function(err,stdout,stderr) {
-        result = stdout.split(',')[0].split(':')[1].trim();
-        exec(`osascript -e 'do shell script "./dnsoff.sh `+result+`" with administrator privileges'`);
-      });
-    }); 
+    switch(os.platform()) {
+      case "darwin":
+        exec(`route get handshake.org | grep interface`, function(err,stdout,stderr) {
+          result = stdout.split(':')[1].trim();
+          exec(`networksetup -listnetworkserviceorder |grep `+result, function(err,stdout,stderr) {
+            result = stdout.split(',')[0].split(':')[1].trim();
+            exec(`osascript -e 'do shell script "./dnsoff.sh `+result+`" with administrator privileges'`);
+          });
+        });
+        break;
+      case "linux":
+        exec(`sudo ./dnsoff-linux.sh`);
+        break;
+    }
   }
 }
+
