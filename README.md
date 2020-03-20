@@ -1,4 +1,6 @@
 # hns-dns
+# I don't recommend this since your hsd node is likely your wallet.  Best to keep DNS resolution and your wallet separated.
+## Use [HoldMyHand](https://github.com/realrasengan/holdmyhand) Instead!
 
 This script simply helps you set your resolution up if you have hsd running on Mac or Linux (or with Bob) on port 5350.  This sets up a port forward and sets your dns server to 127.0.0.1.
 Specifically, in Mac OS X, it uses pfctl and sets up a redirect for port 53 traffic to 5350. On linux, a port 53
